@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Room Allocation System</title>
+  <!-- SEO & Search engine friendliness -->
+  <meta name="description" content="A state of the art Hostel Room Allocation and Management system with real-time application processing, and secure portal messaging.">
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loader" class="loader-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast hidden">
+    <span id="toast-message">Message here</span>
+  </div>
+
+  <!-- Main Container -->
+  <div id="app">
+
+    <!-- ==================== AUTH VIEW ==================== -->
+    <div id="auth-view" class="view">
+      <div class="auth-card-wrapper">
+        <div class="auth-header">
+          <div class="logo-icon"><i class="fa-solid fa-hotel"></i></div>
+          <h1>HMS Portal</h1>
+          <p>Hostel Management & Room Allocation System</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button id="tab-btn-student-login" class="tab-btn active" onclick="switchAuthTab('student-login')">Student Login</button>
+          <button id="tab-btn-manager-login" class="tab-btn" onclick="switchAuthTab('manager-login')">Manager Login</button>
+          <button id="tab-btn-signup" class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
+        </div>
+
+        <!-- Student Login Form -->
+        <form id="form-student-login" class="auth-form" onsubmit="handleStudentLogin(event)">
+          <div class="form-group">
+            <label for="student-login-id"><i class="fa-solid fa-id-card"></i> Student Roll No</label>
+            <input type="text" id="student-login-id" placeholder="e.g. B160497CS" required>
+          </div>
+          <div class="form-group">
+            <label for="student-login-pwd"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="student-login-pwd" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-student-login-submit">Login as Student</button>
+        </form>
+
+        <!-- Manager Login Form -->
+        <form id="form-manager-login" class="auth-form hidden" onsubmit="handleManagerLogin(event)">
+          <div class="form-group">
+            <label for="manager-login-id"><i class="fa-solid fa-user-shield"></i> Username</label>
+            <input type="text" id="manager-login-id" placeholder="e.g. managerA" required>
+          </div>
+          <div class="form-group">
+            <label for="manager-login-pwd"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="manager-login-pwd" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-manager-login-submit">Login as Manager</button>
+        </form>
+
+        <!-- Student Signup Form -->
+        <form id="form-signup" class="auth-form hidden" onsubmit="handleStudentSignup(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="signup-fname"><i class="fa-solid fa-user"></i> First Name</label>
+              <input type="text" id="signup-fname" placeholder="First Name" required>
+            </div>
+            <div class="form-group">
+              <label for="signup-lname"><i class="fa-solid fa-user"></i> Last Name</label>
+              <input type="text" id="signup-lname" placeholder="Last Name" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="signup-roll"><i class="fa-solid fa-id-card"></i> Roll No</label>
+              <input type="text" id="signup-roll" placeholder="e.g. B160497CS" required>
+            </div>
+            <div class="form-group">
+              <label for="signup-mob"><i class="fa-solid fa-phone"></i> Mobile No</label>
+              <input type="tel" id="signup-mob" placeholder="e.g. 09757318791" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="signup-dept"><i class="fa-solid fa-graduation-cap"></i> Department</label>
+              <input type="text" id="signup-dept" placeholder="e.g. CSE" required>
+            </div>
+            <div class="form-group">
+              <label for="signup-year"><i class="fa-solid fa-calendar"></i> Year of Study</label>
+              <input type="number" id="signup-year" placeholder="e.g. 3" min="1" max="5" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-pwd"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="signup-pwd" placeholder="Create password" required>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-signup-submit">Register</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== DASHBOARD VIEW ==================== -->
+    <div id="dashboard-view" class="view hidden">
+      <div class="app-layout">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span class="portal-title">HMS Portal</span>
+          </div>
+          
+          <div class="user-badge">
+            <div class="avatar"><i class="fa-solid fa-circle-user"></i></div>
+            <div class="user-info">
+              <h4 id="sidebar-user-name">Loading...</h4>
+              <p id="sidebar-user-role">Student</p>
+            </div>
+          </div>
+
+          <nav class="sidebar-nav">
+            <!-- Student Links -->
+            <div id="nav-student-group">
+              <a href="#" class="nav-link active" onclick="switchSubSection('student-profile', event)" id="nav-student-profile">
+                <i class="fa-solid fa-id-card-clip"></i> My Profile
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('student-apply', event)" id="nav-student-apply">
+                <i class="fa-solid fa-paper-plane"></i> Apply for Room
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('student-messages', event)" id="nav-student-messages">
+                <i class="fa-solid fa-envelope-open-text"></i> Messages
+              </a>
+            </div>
+
+            <!-- Manager Links -->
+            <div id="nav-manager-group" class="hidden">
+              <a href="#" class="nav-link active" onclick="switchSubSection('manager-stats', event)" id="nav-manager-stats">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('manager-apps', event)" id="nav-manager-apps">
+                <i class="fa-solid fa-list-check"></i> Applications
+                <span class="badge badge-accent hidden" id="badge-pending-apps">0</span>
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('manager-rooms', event)" id="nav-manager-rooms">
+                <i class="fa-solid fa-door-open"></i> Room Directory
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('manager-students', event)" id="nav-manager-students">
+                <i class="fa-solid fa-users"></i> Students List
+              </a>
+              <a href="#" class="nav-link" onclick="switchSubSection('manager-messages', event)" id="nav-manager-messages">
+                <i class="fa-solid fa-comments"></i> Chat Box
+              </a>
+            </div>
+          </nav>
+
+          <div class="sidebar-footer">
+            <button class="btn-logout" onclick="handleLogout()" id="btn-logout"><i class="fa-solid fa-sign-out-alt"></i> Log Out</button>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+          <header class="content-header">
+            <h2 id="section-title">My Profile</h2>
+            <div id="header-extra" class="header-extra"></div>
+          </header>
+
+          <div class="scroll-container">
+            
+            <!-- ====== STUDENT SUBSECTIONS ====== -->
+
+            <!-- Student Profile Section -->
+            <section id="section-student-profile" class="sub-section">
+              <div class="grid-card profile-details-card">
+                <div class="profile-card-header">
+                  <div class="profile-avatar"><i class="fa-solid fa-user-graduate"></i></div>
+                  <div class="profile-meta">
+                    <h3 id="prof-fullname">Full Name</h3>
+                    <p id="prof-roll">Roll No</p>
+                  </div>
+                  <div class="room-status-badge" id="prof-room-badge">Unallocated</div>
+                </div>
+                
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="label">Mobile Number</span>
+                    <span class="value" id="prof-mobile">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Department</span>
+                    <span class="value" id="prof-dept">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Year of Study</span>
+                    <span class="value" id="prof-year">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Hostel block</span>
+                    <span class="value" id="prof-hostel">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Room Number</span>
+                    <span class="value" id="prof-room">N/A</span>
+                  </div>
+                </div>
+
+                <div id="profile-action-container" class="profile-actions hidden">
+                  <button class="btn-danger" id="btn-vacate-room" onclick="handleVacateRoom()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Vacate Current Room</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Student Apply Section -->
+            <section id="section-student-apply" class="sub-section hidden">
+              <div class="grid-card">
+                <div class="card-header">
+                  <h3>Hostel Room Application</h3>
+                  <p>Apply for a vacant room in any of the university hostel blocks.</p>
+                </div>
+                
+                <!-- If student already has a room -->
+                <div id="apply-already-allocated" class="alert alert-success hidden">
+                  <i class="fa-solid fa-circle-check"></i> You have already been allocated to a room. No further applications are necessary.
+                </div>
+
+                <!-- If student has a pending application -->
+                <div id="apply-pending-container" class="pending-app-details hidden">
+                  <div class="status-indicator warning">
+                    <div class="status-pulse"></div>
+                    <div>
+                      <h4>Application Pending</h4>
+                      <p>Your application is currently being reviewed by the hostel manager.</p>
+                    </div>
+                  </div>
+                  <div class="info-box-styled mt-4">
+                    <div class="info-box-row"><strong>Target Hostel:</strong> <span id="pending-app-hostel">N/A</span></div>
+                    <div class="info-box-row"><strong>Your Request Message:</strong> <span id="pending-app-msg">N/A</span></div>
+                  </div>
+                </div>
+
+                <!-- Open Form to Apply -->
+                <form id="form-room-application" onsubmit="handleRoomApplication(event)">
+                  <div class="form-group">
+                    <label for="apply-hostel-select">Select Hostel Block</label>
+                    <select id="apply-hostel-select" class="form-select" required>
+                      <option value="" disabled selected>Choose a hostel...</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="apply-message">Request Note / Preferences</label>
+                    <textarea id="apply-message" placeholder="e.g. Ground floor request, specific medical queries, room partner preference..." rows="4"></textarea>
+                  </div>
+                  <button type="submit" class="btn-primary" id="btn-submit-application">Submit Application</button>
+                </form>
+              </div>
+            </section>
+
+            <!-- Student Messages Section -->
+            <section id="section-student-messages" class="sub-section hidden">
+              <div class="grid-card messaging-dashboard">
+                <div class="flex-header">
+                  <h3>Conversation History</h3>
+                  <button class="btn-primary btn-sm" onclick="openNewMessageModal()"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+                </div>
+                <div class="table-responsive mt-4">
+                  <table class="styled-table">
+                    <thead>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>From/To</th>
+                        <th>Subject</th>
+                        <th>Message Content</th>
+                      </tr>
+                    </thead>
+                    <tbody id="student-messages-list">
+                      <tr><td colspan="4" class="text-center">No messages found.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- ====== MANAGER SUBSECTIONS ====== -->
+
+            <!-- Manager stats/dashboard -->
+            <section id="section-manager-stats" class="sub-section hidden">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon primary"><i class="fa-solid fa-door-open"></i></div>
+                  <div class="stat-details">
+                    <h3 id="stat-total-rooms">0</h3>
+                    <p>Total Rooms</p>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon success"><i class="fa-solid fa-user-check"></i></div>
+                  <div class="stat-details">
+                    <h3 id="stat-allocated-rooms">0</h3>
+                    <p>Allocated Rooms</p>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon warning"><i class="fa-solid fa-circle-notch"></i></div>
+                  <div class="stat-details">
+                    <h3 id="stat-empty-rooms">0</h3>
+                    <p>Empty Rooms</p>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon accent"><i class="fa-solid fa-file-invoice"></i></div>
+                  <div class="stat-details">
+                    <h3 id="stat-pending-apps">0</h3>
+                    <p>Pending Applications</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick overview panel -->
+              <div class="grid-card mt-6">
+                <h3>Hostel block Information</h3>
+                <div class="info-grid mt-4">
+                  <div class="info-item">
+                    <span class="label">Block Name</span>
+                    <span class="value" id="mgr-hostel-name">N/A</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Total Students Residing</span>
+                    <span class="value" id="stat-total-students">0</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Occupancy Rate</span>
+                    <span class="value" id="mgr-occupancy-rate">0%</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Manager Pending Applications -->
+            <section id="section-manager-apps" class="sub-section hidden">
+              <div class="grid-card">
+                <h3>Incoming Room Applications</h3>
+                <p>Review student applications, select an empty room, and allocate or decline.</p>
+                
+                <div class="table-responsive mt-4">
+                  <table class="styled-table">
+                    <thead>
+                      <tr>
+                        <th>Student Name & Roll</th>
+                        <th>Dept & Year</th>
+                        <th>Details / Request Message</th>
+                        <th>Select Room</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="manager-apps-list">
+                      <tr><td colspan="5" class="text-center">No pending applications.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- Manager Rooms Directory -->
+            <section id="section-manager-rooms" class="sub-section hidden">
+              <div class="grid-card">
+                <h3>Room Allocation Directory</h3>
+                <div class="table-responsive mt-4">
+                  <table class="styled-table">
+                    <thead>
+                      <tr>
+                        <th>Room No</th>
+                        <th>Status</th>
+                        <th>Residing Student</th>
+                        <th>Student Roll No</th>
+                      </tr>
+                    </thead>
+                    <tbody id="manager-rooms-list">
+                      <tr><td colspan="4" class="text-center">No rooms registered.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- Manager Students List -->
+            <section id="section-manager-students" class="sub-section hidden">
+              <div class="grid-card">
+                <h3>Residing Students</h3>
+                <div class="table-responsive mt-4">
+                  <table class="styled-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Roll No</th>
+                        <th>Contact No</th>
+                        <th>Dept & Year</th>
+                        <th>Room Allocated</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="manager-students-list">
+                      <tr><td colspan="6" class="text-center">No student resides in this block.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- Manager Messages Section -->
+            <section id="section-manager-messages" class="sub-section hidden">
+              <div class="grid-card messaging-dashboard">
+                <div class="flex-header">
+                  <h3>Hostel Communications</h3>
+                  <button class="btn-primary btn-sm" onclick="openNewMessageModal()"><i class="fa-solid fa-paper-plane"></i> Send Notification</button>
+                </div>
+                <div class="table-responsive mt-4">
+                  <table class="styled-table">
+                    <thead>
+                      <tr>
+                        <th>Date & Time</th>
+                        <th>Student ID</th>
+                        <th>Subject</th>
+                        <th>Message Content</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody id="manager-messages-list">
+                      <tr><td colspan="5" class="text-center">No message history.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ==================== NEW MESSAGE MODAL ==================== -->
+    <div id="message-modal" class="modal hidden">
+      <div class="modal-content glass">
+        <div class="modal-header">
+          <h3>Compose Message</h3>
+          <button class="close-btn" onclick="closeNewMessageModal()">&times;</button>
+        </div>
+        <form id="form-send-message" onsubmit="handleSendMessage(event)">
+          <div class="form-group">
+            <label for="msg-recipient">Recipient ID</label>
+            <input type="text" id="msg-recipient" placeholder="Recipient username or Roll No" required>
+          </div>
+          <div class="form-group">
+            <label for="msg-subject">Subject</label>
+            <input type="text" id="msg-subject" placeholder="Subject description" required>
+          </div>
+          <div class="form-group">
+            <label for="msg-body">Message</label>
+            <textarea id="msg-body" placeholder="Write your message here..." rows="5" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeNewMessageModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
