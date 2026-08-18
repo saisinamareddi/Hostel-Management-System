@@ -145,7 +145,7 @@ async function seedData() {
     if (hostelCount.count === 0) {
       console.log('Seeding Hostels...');
       const hostels = [
-        { id: 1, name: 'A', limit: '400' },
+        { id: 1, name: 'GIRLS HOSTEL', limit: '400' },
         { id: 2, name: 'B', limit: '400' },
         { id: 3, name: 'C', limit: '400' },
         { id: 4, name: 'D', limit: '400' },
@@ -207,15 +207,22 @@ async function seedData() {
       `, ['B160000CS', 'Test', 'Student', '09876543210', 'ECE', '2', studentPwdHash]);
     }
 
+    // Clean up old Harika student if exists
+    await query.run("DELETE FROM Student WHERE Student_id = 'Harika'");
+    await query.run("DELETE FROM Student WHERE Student_id = '23S01A0519'");
+
+    // Ensure Hostel 1 is named GIRLS HOSTEL
+    await query.run("UPDATE Hostel SET Hostel_name = 'GIRLS HOSTEL' WHERE Hostel_id = 1");
+
     // Seed Harika student if not exists
-    const harikaStudent = await query.get("SELECT * FROM Student WHERE Student_id = 'Harika'");
+    const harikaStudent = await query.get("SELECT * FROM Student WHERE Student_id = '23SO1A0519'");
     if (!harikaStudent) {
-      console.log('Seeding student Harika...');
-      const harikaPwdHash = await bcrypt.hash('Harika2006', 10);
+      console.log('Seeding student HARIKA...');
+      const harikaPwdHash = await bcrypt.hash('23SO1A0519', 10);
       await query.run(`
         INSERT INTO Student (Student_id, Fname, Lname, Mob_no, Dept, Year_of_study, Pwd, Hostel_id, Room_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)
-      `, ['Harika', 'Harika', 'Student', '09998887776', 'CSE', '2', harikaPwdHash]);
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1, NULL)
+      `, ['23SO1A0519', 'Harika', '', '1234567890', 'computer science and engineering', 'btech 4th', harikaPwdHash]);
     }
 
     // 4. Seed Hostel Managers & Admins

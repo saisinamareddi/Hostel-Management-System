@@ -241,6 +241,91 @@ app.post('/api/student/vacate', async (req, res) => {
   }
 });
 
+// Update student profile details
+app.post('/api/student/update-profile', async (req, res) => {
+  const user = await getAuthUser(req);
+  if (!user || req.headers['x-user-type'] !== 'student') {
+    return res.status(401).json({ error: 'Unauthorized.' });
+  }
+
+  const { student_id, fname, lname, mob_no, dept, year_of_study, hostel_id, password } = req.body;
+
+  if (!student_id || !fname || !mob_no || !dept || !year_of_study) {
+    return res.status(400).json({ error: 'First Name, Student ID, Mobile, Department, and Year of Study are required.' });
+  }
+
+  try {
+    const oldStudentId = user.Student_id;
+
+    // If student ID is changing, make sure it is unique
+    if (student_id !== oldStudentId) {
+      const existing = await query.get('SELECT * FROM Student WHERE Student_id = ?', [student_id]);
+      if (existing) {
+        return res.status(400).json({ error: 'Student with this Roll No already exists.' });
+      }
+    }
+
+    const targetHostelId = hostel_id ? parseInt(hostel_id, 10) : null;
+
+    // Handle room vacation if hostel block is changing
+    if (user.Room_id && targetHostelId !== user.Hostel_id) {
+      await query.run('UPDATE Room SET Allocated = 0 WHERE Room_id = ?', [user.Room_id]);
+      await query.run('UPDATE Student SET Room_id = NULL WHERE Student_id = ?', [oldStudentId]);
+      await query.run('DELETE FROM Application WHERE Student_id = ?', [oldStudentId]);
+    } else if (targetHostelId !== user.Hostel_id) {
+      // Update pending application if any
+      await query.run(
+        'UPDATE Application SET Hostel_id = ? WHERE Student_id = ? AND Application_status = 0',
+        [targetHostelId, oldStudentId]
+      );
+    }
+
+    // 1. If student_id changed, manually cascade update to Application and Message tables
+    if (student_id !== oldStudentId) {
+      await query.run('UPDATE Application SET Student_id = ? WHERE Student_id = ?', [student_id, oldStudentId]);
+      await query.run('UPDATE Message SET sender_id = ? WHERE sender_id = ?', [student_id, oldStudentId]);
+      await query.run('UPDATE Message SET receiver_id = ? WHERE receiver_id = ?', [student_id, oldStudentId]);
+    }
+
+    // 2. Update Student Table
+    let updateSql = `UPDATE Student 
+       SET Student_id = ?, Fname = ?, Lname = ?, Mob_no = ?, Dept = ?, Year_of_study = ?, Hostel_id = ?`;
+    const params = [
+      student_id,
+      fname,
+      lname || '',
+      mob_no,
+      dept,
+      year_of_study,
+      targetHostelId
+    ];
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateSql += `, Pwd = ?`;
+      params.push(hashedPassword);
+    }
+
+    updateSql += ` WHERE Student_id = ?`;
+    params.push(oldStudentId);
+
+    await query.run(updateSql, params);
+
+    res.json({
+      message: 'Profile updated successfully.',
+      user: {
+        id: student_id,
+        fname: fname,
+        lname: lname || '',
+        type: 'student'
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update profile.' });
+  }
+});
+
 // Get Messages
 app.get('/api/messages', async (req, res) => {
   const user = await getAuthUser(req);

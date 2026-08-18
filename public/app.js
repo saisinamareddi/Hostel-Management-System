@@ -277,15 +277,15 @@ async function loadStudentProfile() {
     document.getElementById('prof-room').textContent = s.Room_No || 'Not Allocated';
 
     const badge = document.getElementById('prof-room-badge');
-    const actions = document.getElementById('profile-action-container');
+    const vacateBtn = document.getElementById('btn-vacate-room');
     if (s.Room_id) {
       badge.textContent = `Room ${s.Room_No} (${s.Hostel_name})`;
       badge.className = 'room-status-badge allocated';
-      actions.classList.remove('hidden');
+      vacateBtn.classList.remove('hidden');
     } else {
       badge.textContent = 'Room Unallocated';
       badge.className = 'room-status-badge';
-      actions.classList.add('hidden');
+      vacateBtn.classList.add('hidden');
     }
   } catch (err) {
     showToast(err.message, 'error');
@@ -744,6 +744,112 @@ async function handleSendMessage(e) {
     } else {
       loadManagerMessages();
     }
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// --- PROFILE EDIT SYSTEM ---
+
+async function openEditProfileModal() {
+  showLoader();
+  try {
+    // 1. Fetch current profile details
+    const resProfile = await fetch(`${API_PREFIX}/student/profile`, {
+      headers: getAuthHeaders()
+    });
+    const dataProfile = await resProfile.json();
+    if (!resProfile.ok) throw new Error(dataProfile.error);
+
+    const s = dataProfile.profile;
+
+    // 2. Fetch list of hostels for dropdown selection
+    const resHostels = await fetch(`${API_PREFIX}/hostels`);
+    const hostels = await resHostels.json();
+    if (!resHostels.ok) throw new Error(hostels.error || 'Failed to fetch hostels.');
+
+    // Populate hostel block dropdown
+    const select = document.getElementById('edit-hostel-select');
+    select.innerHTML = '<option value="" disabled selected>Choose a hostel...</option>';
+    hostels.forEach(h => {
+      const option = document.createElement('option');
+      option.value = h.Hostel_id;
+      option.textContent = `Hostel Block ${h.Hostel_name}`;
+      select.appendChild(option);
+    });
+
+    // 3. Pre-fill form fields
+    document.getElementById('edit-fname').value = s.Fname;
+    document.getElementById('edit-lname').value = s.Lname || '';
+    document.getElementById('edit-roll').value = s.Student_id;
+    document.getElementById('edit-mob').value = s.Mob_no;
+    document.getElementById('edit-dept').value = s.Dept;
+    document.getElementById('edit-year').value = s.Year_of_study;
+    document.getElementById('edit-pwd').value = '';
+    if (s.Hostel_id) {
+      select.value = s.Hostel_id;
+    }
+
+    // Show modal
+    document.getElementById('profile-modal').classList.remove('hidden');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+function closeEditProfileModal() {
+  document.getElementById('profile-modal').classList.add('hidden');
+}
+
+async function handleUpdateProfile(e) {
+  e.preventDefault();
+  const fname = document.getElementById('edit-fname').value.trim();
+  const lname = document.getElementById('edit-lname').value.trim();
+  const roll = document.getElementById('edit-roll').value.trim();
+  const mob = document.getElementById('edit-mob').value.trim();
+  const dept = document.getElementById('edit-dept').value.trim();
+  const year = document.getElementById('edit-year').value.trim();
+  const hostelId = document.getElementById('edit-hostel-select').value;
+  const pwd = document.getElementById('edit-pwd').value;
+
+  const payload = {
+    student_id: roll,
+    fname,
+    lname,
+    mob_no: mob,
+    dept,
+    year_of_study: year,
+    hostel_id: hostelId
+  };
+
+  if (pwd) {
+    payload.password = pwd;
+  }
+
+  showLoader();
+  try {
+    const res = await fetch(`${API_PREFIX}/student/update-profile`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    showToast('Profile updated successfully!', 'success');
+    
+    // Update local session
+    currentUser = data.user;
+    localStorage.setItem('hms_session', JSON.stringify(currentUser));
+    
+    closeEditProfileModal();
+    
+    // Refresh visual details
+    showDashboard();
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
