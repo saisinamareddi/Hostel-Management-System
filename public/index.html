@@ -3,16 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hostel Room Allocation System</title>
-  <!-- SEO & Search engine friendliness -->
-  <meta name="description" content="A state of the art Hostel Room Allocation and Management system with real-time application processing, and secure portal messaging.">
+  <title>NIT Calicut - Hostel Room Allocation & Management System</title>
+  <!-- SEO & Description -->
+  <meta name="description" content="Official Hostel Room Allocation and Management system with real-time student applications, room allocation, and warden portal.">
+  <!-- Cache-Buster & Service Worker Deregistration -->
+  <script>
+    // Ensure any previously registered service worker or offline cache is immediately destroyed
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (let name of names) {
+          caches.delete(name);
+        }
+      });
+    }
+  </script>
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 

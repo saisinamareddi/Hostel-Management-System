@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIT Calicut - Hostel Management System | Complete Project Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a0ca3;
+      --secondary: #4cc9f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --code-bg: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding: 40px 20px;
+    }
+
+    .doc-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      padding: 60px 80px;
+    }
+
+    /* Cover / Header */
+    .doc-header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.4rem;
+      color: #0f172a;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .doc-meta span strong { color: var(--text-main); }
+
+    /* Typography */
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      color: var(--primary-dark);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      color: #1e293b;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    p, ul, ol { margin-bottom: 16px; font-size: 0.98rem; }
+    ul, ol { padding-left: 24px; }
+    li { margin-bottom: 6px; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0 30px;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background-color: #f8fafc; }
+
+    /* Code Blocks */
+    pre {
+      background: var(--code-bg);
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      color: #e11d48;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .info-card h4 {
+      color: var(--primary);
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+
+    /* Print Styles */
+    @media print {
+      body { background: white; padding: 0; }
+      .doc-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      pre { white-space: pre-wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-container">
+
+    <!-- Header Section -->
+    <header class="doc-header">
+      <div class="badge">Official Technical Specification & System Report</div>
+      <h1>NIT Calicut - Hostel Room Allocation & Management System</h1>
+      <div class="subtitle">Complete Architectural Documentation, Technology Stack, Data Dictionary & Operational Guide</div>
+      <div class="doc-meta">
+        <span><strong>Version:</strong> 2.0.0</span>
+        <span><strong>Institution:</strong> National Institute of Technology Calicut</span>
+        <span><strong>Runtime:</strong> Node.js / SQLite3</span>
+        <span><strong>Default Port:</strong> http://localhost:5000</span>
+      </div>
+    </header>
+
+    <!-- 1. Executive Summary -->
+    <section>
+      <h2>1. Executive Summary</h2>
+      <p>The <strong>Hostel Room Allocation and Management System (HMS)</strong> is an enterprise-grade full-stack web application designed to digitize and automate student residential administration at NIT Calicut. The system eliminates manual paperwork, spreadsheet tracking, and allocation delays by providing real-time room inventory management, online student room requests, approval workflows, and two-way warden communications.</p>
+      
+      <div class="card-grid">
+        <div class="info-card">
+          <h4>Room Inventory</h4>
+          <p>Real-time room occupancy analytics across all hostel blocks (GIRLS HOSTEL, Block B through F).</p>
+        </div>
+        <div class="info-card">
+          <h4>Student Self-Service</h4>
+          <p>Self-registration, profile management, allocation requests with special preferences, and status tracking.</p>
+        </div>
+        <div class="info-card">
+          <h4>Warden Command Center</h4>
+          <p>One-click room allotment, vacancy management, student roll roster, and campus broadcasts.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Technology Stack & Languages -->
+    <section>
+      <h2>2. Technology Stack & Programming Languages</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Technology / Tool</th>
+            <th>Type / Role</th>
+            <th>Version</th>
+            <th>Primary Function in System</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>JavaScript (ES6+)</strong></td>
+            <td>Programming Language</td>
+            <td>ES2022</td>
+            <td>Powers backend API routes, SQLite async wrappers, UI controllers, and async DOM updates.</td>
+          </tr>
+          <tr>
+            <td><strong>HTML5</strong></td>
+            <td>Markup Language</td>
+            <td>HTML5 Standard</td>
+            <td>Semantic application skeleton, accessible modals, input validation, and cache-busting headers.</td>
+          </tr>
+          <tr>
+            <td><strong>CSS3</strong></td>
+            <td>Styling Language</td>
+            <td>CSS3 Standard</td>
+            <td>Glassmorphic design system, CSS Variables, Flexbox, CSS Grid, and responsive layout rules.</td>
+          </tr>
+          <tr>
+            <td><strong>SQL (SQLite)</strong></td>
+            <td>Query Language</td>
+            <td>SQLite 3.x</td>
+            <td>Relational data modeling, foreign key constraints (CASCADE), and transaction processing.</td>
+          </tr>
+          <tr>
+            <td><strong>Node.js</strong></td>
+            <td>Backend Runtime</td>
+            <td>v18.x - v22.x</td>
+            <td>Asynchronous, non-blocking JavaScript execution environment on the server.</td>
+          </tr>
+          <tr>
+            <td><strong>Express.js</strong></td>
+            <td>Backend Framework</td>
+            <td>^4.19.2</td>
+            <td>HTTP server, REST API routing, CORS handling, and cache-control security headers.</td>
+          </tr>
+          <tr>
+            <td><strong>SQLite3</strong></td>
+            <td>Relational Database</td>
+            <td>^5.1.7</td>
+            <td>Serverless, zero-configuration disk database (<code>data/hms.db</code>) running in WAL journal mode.</td>
+          </tr>
+          <tr>
+            <td><strong>Bcrypt.js</strong></td>
+            <td>Cryptography Library</td>
+            <td>^2.4.3</td>
+            <td>One-way password hashing with 10 salt rounds for secure credential storage.</td>
+          </tr>
+          <tr>
+            <td><strong>Google Fonts</strong></td>
+            <td>Typography</td>
+            <td>Web Fonts</td>
+            <td>Modern typography pairing: <em>Outfit</em> (brand & headings) and <em>Inter</em> (interface text).</td>
+          </tr>
+          <tr>
+            <td><strong>FontAwesome</strong></td>
+            <td>Vector Icons</td>
+            <td>6.4.0</td>
+            <td>Icons for metrics, actions, navigation buttons, and status indicators.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. System Architecture -->
+    <section>
+      <h2>3. System Architecture</h2>
+      <p>The system is architected as a clean, decoupled 3-Tier Web Application:</p>
+      <ul>
+        <li><strong>Presentation Layer (SPA)</strong>: Vanilla HTML5, CSS3, and JavaScript Single Page Application that dynamically switches views (Auth View, Student Portal, Manager Portal) without page reloads.</li>
+        <li><strong>Application & API Layer (Node.js/Express)</strong>: RESTful API server running on <code>http://localhost:5000</code> with CORS, session authentication headers, and business logic controllers.</li>
+        <li><strong>Data Persistence Layer (SQLite3)</strong>: File-based relational database running in Write-Ahead Logging (WAL) mode for maximum concurrency and data safety.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Cache-Busting & Port 5000 Isolation:</strong> To prevent collisions with existing web applications or browser service-workers on port 3000, the server runs on <code>Port 5000</code> and serves <code>Cache-Control: no-store</code> headers, while the client automatically unregisters any lingering service workers.
+      </div>
+    </section>
+
+    <!-- 4. Project Directory Structure -->
+    <section>
+      <h2>4. Project Directory Structure</h2>
+      <pre>
+Hostel-Management-System/
+├── src/                                  # Backend Source Code
+│   ├── server.js                         # Express server, REST routes & static server
+│   └── db.js                             # SQLite connection, schemas & seed data
+├── public/                               # Frontend Single Page Application
+│   ├── index.html                        # Application interface with cache-buster
+│   ├── style.css                         # Glassmorphic CSS design system
+│   └── app.js                            # UI state management & REST client
+├── data/                                 # Persistent Database Storage
+│   └── hms.db                            # SQLite database file
+├── Documentation/                        # Specifications, Reports & Manuals
+│   ├── HOSTEL_MANAGEMENT_SYSTEM_COMPLETE_DOCUMENTATION.md
+│   ├── PROJECT_DOCUMENT_REPORT.html      # This formatted document report
+│   ├── TECH_STACK_AND_ARCHITECTURE.md
+│   ├── SDD.pdf
+│   ├── SRS.pdf
+│   └── User Manual.pdf
+├── legacy_php/                           # Archived Original NIT Calicut PHP/MySQL Code
+│   ├── admin/
+│   ├── database/
+│   ├── templates/
+│   └── *.php (about.php, home.php, allocate_room.php, etc.)
+├── package.json                          # Node dependencies & startup scripts
+└── README.md                             # System overview and quickstart guide
+      </pre>
+    </section>
+
+    <!-- 5. Database Schema & Tables -->
+    <section>
+      <h2>5. Database Schema & Data Dictionary</h2>
+      
+      <h3>Table: Hostel</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Hostel_id</td><td>INTEGER</td><td>PRIMARY KEY, AUTOINCREMENT</td><td>Unique block ID</td></tr>
+          <tr><td>Hostel_name</td><td>TEXT</td><td>NOT NULL</td><td>Block name (e.g. GIRLS HOSTEL, B, C)</td></tr>
+          <tr><td>current_no_of_rooms</td><td>TEXT</td><td>NULLABLE</td><td>Configured room count</td></tr>
+          <tr><td>No_of_rooms</td><td>TEXT</td><td>NULLABLE</td><td>Capacity limit (default 400)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table: Room</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Room_id</td><td>INTEGER</td><td>PRIMARY KEY, AUTOINCREMENT</td><td>Unique room ID</td></tr>
+          <tr><td>Hostel_id</td><td>INTEGER</td><td>NOT NULL, FK -&gt; Hostel</td><td>Hostel block (ON DELETE CASCADE)</td></tr>
+          <tr><td>Room_No</td><td>INTEGER</td><td>NOT NULL</td><td>Room unit number (e.g. 101, 102)</td></tr>
+          <tr><td>Allocated</td><td>INTEGER</td><td>DEFAULT 0</td><td>0 = Available, 1 = Occupied</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table: Student</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Student_id</td><td>TEXT</td><td>PRIMARY KEY</td><td>Student Roll No (e.g. B160497CS)</td></tr>
+          <tr><td>Fname</td><td>TEXT</td><td>NOT NULL</td><td>First Name</td></tr>
+          <tr><td>Lname</td><td>TEXT</td><td>NOT NULL</td><td>Last Name</td></tr>
+          <tr><td>Mob_no</td><td>TEXT</td><td>NOT NULL</td><td>Contact Phone</td></tr>
+          <tr><td>Dept</td><td>TEXT</td><td>NOT NULL</td><td>Department (e.g. CSE)</td></tr>
+          <tr><td>Year_of_study</td><td>TEXT</td><td>NOT NULL</td><td>Year of study (1 to 5)</td></tr>
+          <tr><td>Pwd</td><td>TEXT</td><td>NOT NULL</td><td>Bcrypt hashed password</td></tr>
+          <tr><td>Hostel_id</td><td>INTEGER</td><td>FK -&gt; Hostel</td><td>Allocated hostel block</td></tr>
+          <tr><td>Room_id</td><td>INTEGER</td><td>FK -&gt; Room</td><td>Allocated room</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table: Hostel_Manager</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Hostel_man_id</td><td>INTEGER</td><td>PRIMARY KEY, AUTOINCREMENT</td><td>Manager identifier</td></tr>
+          <tr><td>Username</td><td>TEXT</td><td>NOT NULL, UNIQUE</td><td>Login username (e.g. managerA, admin)</td></tr>
+          <tr><td>Fname, Lname</td><td>TEXT</td><td>NOT NULL</td><td>Manager full name</td></tr>
+          <tr><td>Hostel_id</td><td>INTEGER</td><td>NOT NULL, FK -&gt; Hostel</td><td>Supervised block</td></tr>
+          <tr><td>Pwd</td><td>TEXT</td><td>NOT NULL</td><td>Bcrypt hashed password</td></tr>
+          <tr><td>Isadmin</td><td>INTEGER</td><td>DEFAULT 0</td><td>0 = Manager, 1 = Admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table: Application</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Application_id</td><td>INTEGER</td><td>PRIMARY KEY, AUTOINCREMENT</td><td>Application ID</td></tr>
+          <tr><td>Student_id</td><td>TEXT</td><td>NOT NULL, FK -&gt; Student</td><td>Applicant Roll No</td></tr>
+          <tr><td>Hostel_id</td><td>INTEGER</td><td>NOT NULL, FK -&gt; Hostel</td><td>Target Hostel Block</td></tr>
+          <tr><td>Application_status</td><td>INTEGER</td><td>DEFAULT 0</td><td>0 = Pending, 1 = Approved, 2 = Rejected</td></tr>
+          <tr><td>Room_No</td><td>INTEGER</td><td>NULLABLE</td><td>Assigned room on approval</td></tr>
+          <tr><td>Message</td><td>TEXT</td><td>NULLABLE</td><td>Special preferences / medical notes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Table: Message</h3>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>msg_id</td><td>INTEGER</td><td>PRIMARY KEY, AUTOINCREMENT</td><td>Message ID</td></tr>
+          <tr><td>sender_id</td><td>TEXT</td><td>NOT NULL</td><td>Sender ID</td></tr>
+          <tr><td>receiver_id</td><td>TEXT</td><td>NOT NULL</td><td>Recipient ID</td></tr>
+          <tr><td>subject_h</td><td>TEXT</td><td>NULLABLE</td><td>Message Subject</td></tr>
+          <tr><td>message</td><td>TEXT</td><td>NULLABLE</td><td>Message Body</td></tr>
+          <tr><td>msg_date, msg_time</td><td>TEXT</td><td>NULLABLE</td><td>Timestamp metadata</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. API Reference -->
+    <section>
+      <h2>6. Core REST API Endpoints</h2>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Endpoint</th><th>Auth Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>POST</td><td><code>/api/student/signup</code></td><td>No</td><td>Register new student account</td></tr>
+          <tr><td>POST</td><td><code>/api/student/login</code></td><td>No</td><td>Authenticate student (Roll No + Pwd)</td></tr>
+          <tr><td>POST</td><td><code>/api/manager/login</code></td><td>No</td><td>Authenticate manager/admin (Username + Pwd)</td></tr>
+          <tr><td>GET</td><td><code>/api/hostels</code></td><td>No</td><td>List all hostel blocks & capacity</td></tr>
+          <tr><td>GET</td><td><code>/api/student/profile</code></td><td>Student</td><td>Get student profile & room allocation info</td></tr>
+          <tr><td>POST</td><td><code>/api/student/apply</code></td><td>Student</td><td>Submit new hostel room application</td></tr>
+          <tr><td>GET</td><td><code>/api/manager/dashboard</code></td><td>Manager</td><td>Get live block occupancy stats</td></tr>
+          <tr><td>GET</td><td><code>/api/manager/applications</code></td><td>Manager</td><td>List pending student applications</td></tr>
+          <tr><td>POST</td><td><code>/api/manager/allocate</code></td><td>Manager</td><td>Approve application and allocate room</td></tr>
+          <tr><td>POST</td><td><code>/api/manager/vacate</code></td><td>Manager</td><td>Vacate student from assigned room</td></tr>
+          <tr><td>GET</td><td><code>/api/manager/rooms</code></td><td>Manager</td><td>Directory of rooms and current residents</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7. Credentials -->
+    <section>
+      <h2>7. Pre-Configured Test Credentials</h2>
+      <table>
+        <thead>
+          <tr><th>Role</th><th>Username / Roll No</th><th>Password</th><th>Status / Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Student (Allocated)</strong></td><td><code>B160497CS</code></td><td><code>student123</code></td><td>Prajwal Ghoradkar (GIRLS HOSTEL, Room 101)</td></tr>
+          <tr><td><strong>Student (Unallocated)</strong></td><td><code>B160000CS</code></td><td><code>student123</code></td><td>Test Student (Can submit room applications)</td></tr>
+          <tr><td><strong>Student (Harika)</strong></td><td><code>23SO1A0519</code></td><td><code>23SO1A0519</code></td><td>Harika (GIRLS HOSTEL)</td></tr>
+          <tr><td><strong>Hostel Manager</strong></td><td><code>managerA</code></td><td><code>manager123</code></td><td>Manager for Hostel Block 1</td></tr>
+          <tr><td><strong>Administrator</strong></td><td><code>admin</code></td><td><code>admin123</code></td><td>System Administrator</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. Running the Application -->
+    <section>
+      <h2>8. Quickstart & Verification</h2>
+      <p>To run the application locally:</p>
+      <pre><code>npm start</code></pre>
+      <p>Navigate to: <strong><a href="http://localhost:5000" target="_blank">http://localhost:5000</a></strong></p>
+    </section>
+
+  </div>
+
+</body>
+</html>
